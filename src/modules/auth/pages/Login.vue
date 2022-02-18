@@ -9,27 +9,23 @@
             class="d-flex align-center"
           >
             <v-img
-              :src="require('@/assets/images/logos/logo.svg')"
-              max-height="30px"
-              max-width="30px"
+              :src="require('@/assets/images/logos/cat-logo.png')"
+              max-height="100px"
+              max-width="100px"
               alt="logo"
               contain
               class="me-3 "
             ></v-img>
-
-            <h2 class="text-2xl font-weight-semibold">
-              Materio
-            </h2>
           </router-link>
         </v-card-title>
 
         <!-- title -->
         <v-card-text>
           <p class="text-2xl font-weight-semibold text--primary mb-2">
-            Adventure starts here 🚀
+            Bem vindo ao Wheres's Pet ! 👋🏻
           </p>
           <p class="mb-2">
-            Make your app management easy and fun!
+            Por favor, faça login para continuar
           </p>
         </v-card-text>
 
@@ -37,16 +33,7 @@
         <v-card-text>
           <v-form>
             <v-text-field
-              v-model="username"
-              outlined
-              label="Username"
-              placeholder="JohnDoe"
-              hide-details
-              class="mb-3"
-            ></v-text-field>
-
-            <v-text-field
-              v-model="email"
+              v-model="form.usuario"
               outlined
               label="Email"
               placeholder="john@example.com"
@@ -55,33 +42,29 @@
             ></v-text-field>
 
             <v-text-field
-              v-model="password"
+              v-model="form.senha"
               outlined
               :type="isPasswordVisible ? 'text' : 'password'"
-              label="Password"
+              label="Senha"
               placeholder="············"
               :append-icon="isPasswordVisible ? icons.mdiEyeOffOutline : icons.mdiEyeOutline"
               hide-details
               @click:append="isPasswordVisible = !isPasswordVisible"
             ></v-text-field>
-
-            <v-checkbox
-              hide-details
-              class="mt-1"
-            >
-              <template #label>
-                <div class="d-flex align-center flex-wrap">
-                  <span class="me-2">I agree to</span><a href="javascript:void(0)">privacy policy &amp; terms</a>
-                </div>
-              </template>
-            </v-checkbox>
-
+            <v-alert
+              type="error"
+              :value = "alert"
+              transition="slide-y-reverse-transition"
+              dismissible>
+              {{error}}
+            </v-alert>
             <v-btn
               block
               color="primary"
               class="mt-6"
+              @click="submit"
             >
-              Sign Up
+              Login
             </v-btn>
           </v-form>
         </v-card-text>
@@ -89,41 +72,20 @@
         <!-- create new account  -->
         <v-card-text class="d-flex align-center justify-center flex-wrap mt-2">
           <span class="me-2">
-            Already have an account?
+            Novo na plataforma?
           </span>
-          <router-link :to="{ name:'pages-login' }">
-            Sign in instead
+          <router-link :to="{name:'register'}">
+            Criar uma conta
           </router-link>
         </v-card-text>
-
-        <!-- divider -->
-        <v-card-text class="d-flex align-center mt-2">
-          <v-divider></v-divider>
-          <span class="mx-5">or</span>
-          <v-divider></v-divider>
-        </v-card-text>
-
-        <!-- social link -->
-        <v-card-actions class="d-flex justify-center">
-          <v-btn
-            v-for="link in socialLink"
-            :key="link.icon"
-            icon
-            class="ms-1"
-          >
-            <v-icon :color="$vuetify.theme.dark ? link.colorInDark:link.color">
-              {{ link.icon }}
-            </v-icon>
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </div>
 
     <!-- background triangle shape  -->
     <img
       class="auth-mask-bg"
-      height="190"
-      :src="require(`@/assets/images/misc/mask-${$vuetify.theme.dark ? 'dark':'light'}.png`)"
+      height="173"
+      :src="require(`@/assets/images/misc/mask-dark.png`)"
     >
 
     <!-- tree -->
@@ -148,13 +110,28 @@
 // eslint-disable-next-line object-curly-newline
 import { mdiFacebook, mdiTwitter, mdiGithub, mdiGoogle, mdiEyeOutline, mdiEyeOffOutline } from '@mdi/js'
 import { ref } from '@vue/composition-api'
+import { mapActions } from 'vuex'
 
 export default {
+  methods: {
+    ...mapActions('auth', ['ActionDoLogin']),
+    async submit(){
+      try{
+        var formData = new FormData();
+        formData.append('usuario', this.form.usuario)
+        formData.append('senha', this.form.senha)
+        await this.ActionDoLogin(formData)
+
+        this.$router.push( {name: 'search'} )
+      }catch(err){
+        console.log(err)
+        this.error = err.data ? err.data.message : 'Não foi possível realizar essa operação!'
+        this.alert = !this.alert
+      }
+    }
+  },
   setup() {
     const isPasswordVisible = ref(false)
-    const username = ref('')
-    const email = ref('')
-    const password = ref('')
     const socialLink = [
       {
         icon: mdiFacebook,
@@ -179,10 +156,13 @@ export default {
     ]
 
     return {
+      error: '',
+      alert: false,
       isPasswordVisible,
-      username,
-      email,
-      password,
+      form:{
+        usuario: '',
+        senha: ''
+      },
       socialLink,
 
       icons: {
