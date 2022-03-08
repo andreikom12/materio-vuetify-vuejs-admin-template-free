@@ -1,3 +1,5 @@
 export default{
-  profile: []
+  profile: [],
+  animals: [],
+  animalDetails: []
 }

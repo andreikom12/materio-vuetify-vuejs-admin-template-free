@@ -9,7 +9,7 @@
           <v-carousel-item
             v-for="(item, i) in petData.imagens"
             :key="i"
-            :src="item.path"
+            :src="'data:image/png;base64,' + item.base"
             reverse-transition="fade-transition"
             transition="fade-transition"
             contain
@@ -53,8 +53,16 @@
             <v-col cols="12" sm="6">
               <v-text-field v-model="petData.cidade" label="Cidade" readonly></v-text-field>
             </v-col>
+            <v-subheader v-if="petData.infoAdicionais.length > 0">Informações Adicionais</v-subheader>
             <v-col cols="12" sm="12">
-              <v-text-field v-model="petData.infoAdicionais" label="Informações Adicionais" readonly></v-text-field>
+              <v-list-item v-for="(item, i) in petData.infoAdicionais" :key="i">
+                <v-list-item-icon>
+                            <v-icon color="indigo">{{ icons.mdiInformationOutline }}</v-icon>
+                          </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>{{ item.informacao }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
             </v-col>
           </v-row>
           <v-subheader>Contatos</v-subheader>
@@ -108,7 +116,7 @@
 </template>
 
 <script>
-import { mdiEmail, mdiPhone } from '@mdi/js'
+import { mdiEmail, mdiPhone, mdiInformationOutline } from '@mdi/js'
 export default {
   props: {
     petData: {
@@ -121,6 +129,7 @@ export default {
       icons: {
         mdiEmail,
         mdiPhone,
+        mdiInformationOutline
       },
       fones: ['Foo', 'Bar', 'Fizz', 'Buzz'],
     }

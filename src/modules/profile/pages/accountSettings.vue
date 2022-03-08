@@ -25,7 +25,6 @@
     <v-card-text>
       <v-form class="multi-col-validation mt-6" ref="form" v-model="valid" lazy-validation>
         <v-row>
-          <!-- Informações Gerais -->
           <v-subheader>Informações Gerais</v-subheader>
           <v-col md="12" cols="12">
             <v-text-field
@@ -58,54 +57,73 @@
               outlined
             ></v-text-field>
           </v-col>
+          <v-subheader>Endereço</v-subheader>
           <v-col md="12" cols="12">
-            <v-combobox
-              v-model="userArray.telefones"
-              label="Telefones"
-              :multiple="true"
-              chips
-              deletable-chips
-            ></v-combobox>
+            <v-text-field
+              v-model="userArray.endereco.logradouro"
+              label="Logradouro"
+              dense
+              outlined
+            ></v-text-field>
+          </v-col>
+          <v-col md="2" cols="2">
+            <v-text-field
+              v-model="userArray.endereco.numero"
+              label="Numero"
+              dense
+              type="number"
+              min="0"
+              outlined
+            ></v-text-field>
+          </v-col>
+          <v-col md="6" cols="6">
+            <v-text-field
+              v-model="userArray.endereco.complemento"
+              label="Complemento"
+              dense
+              outlined
+            ></v-text-field>
+          </v-col>
+          <v-col md="4" cols="4">
+            <v-text-field
+              v-model="userArray.endereco.bairro"
+              label="Bairro"
+              dense
+              outlined
+            ></v-text-field>
+          </v-col>
+          <v-col md="6" cols="6">
+            <v-text-field
+              v-model="userArray.endereco.cidade"
+              label="Cidade"
+              dense
+              outlined
+            ></v-text-field>
+          </v-col>
+          <v-col md="3" cols="3">
+            <v-text-field
+              v-model="userArray.endereco.estado"
+              label="Estado"
+              dense
+              outlined
+            ></v-text-field>
+          </v-col>
+          <v-col md="3" cols="3">
+            <v-text-field
+              v-model="userArray.endereco.cep"
+              label="CEP"
+              dense
+              outlined
+            ></v-text-field>
           </v-col>
           <v-col md="12" cols="12">
-            <v-combobox v-model="userArray.emails" label="Emails" :multiple="true" chips deletable-chips></v-combobox>
-          </v-col>
-          <v-subheader>Endereços</v-subheader>
-          <v-col md="12" cols="12">
-            <v-text-field v-model="endereco.logradouro" label="Logradouro" dense outlined></v-text-field>
-          </v-col>
-          <v-col md="4" cols="12">
-            <v-text-field v-model="endereco.bairro" label="Bairro" dense outlined></v-text-field>
-          </v-col>
-          <v-col md="4" cols="12">
-            <v-text-field v-model="endereco.numero" label="Numero" dense outlined></v-text-field>
-          </v-col>
-          <v-col md="4" cols="12">
-            <v-text-field v-model="endereco.complemento" label="Complemento" dense outlined></v-text-field>
-          </v-col>
-          <v-col md="4" cols="12">
-            <v-text-field v-model="endereco.cep" label="Cep" dense outlined></v-text-field>
-          </v-col>
-          <v-col md="4" cols="12">
-            <v-text-field v-model="endereco.cidade" label="Cidade" dense outlined></v-text-field>
-          </v-col>
-          <v-col md="4" cols="12">
-            <v-text-field v-model="endereco.estado" label="Estado" dense outlined></v-text-field>
+            <EmailsTable :emailsData="emails" @update-email="updateMail"></EmailsTable>
           </v-col>
           <v-col md="12" cols="12">
-            <v-spacer></v-spacer>
-            <v-btn color="primary" class="me-3 mt-4">
-                Adicionar
-              </v-btn>
+            <PhonesTable :phonesData="telefones" @update-phones="updatePhone"></PhonesTable>
           </v-col>
-
           <v-col md="12" cols="12">
-            <AddressTable :adressData="userArray.enderecos"></AddressTable>
-          </v-col>
-
-          <v-subheader>Relacionamentos</v-subheader>
-          <v-col md="12" cols="12">
-            <v-text-field v-model="relacionamento.logradouro" label="Logradouro" dense outlined></v-text-field>
+            <RelationsTable :relationsData="relacionamentos" @update-relations="updateRelations"></RelationsTable>
           </v-col>
 
           <v-col cols="2">
@@ -126,26 +144,38 @@
 
 <script>
 import { mdiAlertOutline, mdiCloudUploadOutline } from '@mdi/js'
-import { mapActions } from 'vuex'
-import AddressTable from '@/components/tables/AdressTable.vue'
+import { mapActions, mapState } from 'vuex'
+import RelationsTable from '@/components/tables/RelationsTable.vue'
+import PhonesTable from '@/components/tables/PhonesTable.vue'
+import EmailsTable from '@/components/tables/EmailsTable.vue'
 
 export default {
-  props: {
-    accountData: {
-      type: Object,
-      default: () => {},
-    },
-  },
   components: {
-    AddressTable,
+    RelationsTable,
+    PhonesTable,
+    EmailsTable,
   },
-  mounted() {
-    this.userArray = this.accountData
-    this.$forceUpdate()
+  beforeMount() {
+    this.userArray = this.user
+    this.telefones = this.userArray.telefones
+    this.relacionamentos = this.userArray.relacionamanentos
+    this.emails = this.userArray.emails
+  },
+  computed: {
+    ...mapState('auth', ['user']),
   },
   methods: {
     ...mapActions('profile', ['ActionDoUpdate']),
     ...mapActions('auth', ['ActionLoadSession']),
+    updateMail(item){
+      this.emails = item
+    },
+    updatePhone(item){
+      this.telefones = item
+    },
+    updateRelations(item){
+      this.relacionamentos = item
+    },
     validate() {
       if (this.$refs.form.validate()) {
         this.submit()
@@ -156,56 +186,49 @@ export default {
         this.loading = true
         this.userArray.senha = this.password
         this.userArray.confirmacaoSenha = this.confirmPassword
+
+        this.userArray.emails = this.emails
+        this.userArray.telefones = this.telefones
+        this.userArray.relacionamanentos = this.relacionamentos
+        console.log(this.emails)
         await this.ActionDoUpdate(this.userArray)
         this.ActionLoadSession()
+
         this.statusMessage = 'Usuário alterado com sucesso!'
         this.status = 'success'
         this.showAlert = !this.showAlert
       } catch (err) {
         console.log(err)
         this.status = 'error'
-        this.error = err.data ? err.data.message : 'Não foi possível realizar essa operação!'
+        this.statusMessage = err.body.message ? err.body.message : 'Não foi possível realizar essa operação!'
         this.showAlert = !this.showAlert
       } finally {
+        setTimeout(() => {
+          this.showAlert = !this.showAlert
+        }, 4000)
         this.loading = false
       }
     },
   },
-  setup() {
-    return {
-      endereco: {
-        logradouro: '',
-        bairro: '',
-        numero: '',
-        complemento: '',
-        cep: '',
-        cidade: '',
-        estado: '',
-      },
-      relacionamento:{
-        tipo:'',
-        nome:'',
-        email:'',
-        dddTelefone:'',
-        telefone:'',
-        dddCelular:'',
-        celular:''
-      },
-      showAlert: false,
-      statusMessage: '',
-      status: 'error',
-      loading: false,
-      valid: true,
-      password: '',
-      confirmPassword: '',
-      nameRules: [v => !!v || 'Name is required'],
-      userArray: {},
-      icons: {
-        mdiAlertOutline,
-        mdiCloudUploadOutline,
-      },
-    }
-  },
+  data: () => ({
+    enderecos: [],
+    relacionamentos: [],
+    telefones: [],
+    emails: [],
+    showAlert: false,
+    statusMessage: '',
+    status: 'error',
+    loading: false,
+    valid: true,
+    password: '',
+    confirmPassword: '',
+    nameRules: [v => !!v || 'Name is required'],
+    userArray: {},
+    icons: {
+      mdiAlertOutline,
+      mdiCloudUploadOutline,
+    },
+  }),
 }
 </script>
 

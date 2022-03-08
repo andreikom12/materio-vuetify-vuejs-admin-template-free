@@ -14,7 +14,7 @@
           </v-tabs>
           <v-tabs-items v-model="tab">
           <v-tab-item>
-            <AccountSettings :accountData="user"></AccountSettings>
+            <AccountSettings></AccountSettings>
           </v-tab-item>
 
           <v-tab-item>
@@ -36,7 +36,6 @@
 
 import { mdiAccountOutline, mdiPaw, mdiInformationOutline } from '@mdi/js'
 import { ref } from '@vue/composition-api'
-import { mapState, mapActions } from 'vuex'
 
 import AccountSettings from './accountSettings.vue'
 import Animal from './animal.vue'
@@ -47,9 +46,6 @@ export default {
     AccountSettings,
     Animal,
     Adm,
-  },
-  computed: {
-    ...mapState('auth', ['user']),
   },
   setup() {
     const tab = ref('')

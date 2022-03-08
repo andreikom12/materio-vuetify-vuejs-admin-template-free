@@ -14,7 +14,9 @@ export default async (to, from, next) => {
   }else{
     var auth_pages = [
       'login',
-      'register'
+      'register',
+      'confirm',
+      'error'
     ]
     if (auth_pages.indexOf(to.name) < 0 && !store.getters['auth/hasToken']) {
       try {

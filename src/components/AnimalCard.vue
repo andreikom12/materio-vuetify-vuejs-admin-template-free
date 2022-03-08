@@ -2,16 +2,7 @@
   <v-flex xs12 md3 align-center>
     <v-card min-width="100%">
       <v-carousel hide-delimiters height="300" hide-delimiter-background>
-        <v-carousel-item v-for="(item, i) in petData.imagens" :key="i" :src="item.path" contain max-height="300">
-          <!-- <v-sheet :color="white" height="100%" tile>
-            <v-row class="fill-height" align="center" justify="center">
-              <img
-                alt="user"
-                src="https://cdn.pixabay.com/photo/2020/06/24/19/12/cabbage-5337431_1280.jpg"
-                height="100%"
-              >
-            </v-row>
-          </v-sheet> -->
+        <v-carousel-item v-for="(item, i) in petData.imagens" :key="i" :src="'data:image/png;base64,' + item.base" contain max-height="300">
         </v-carousel-item>
       </v-carousel>
       <v-card-title> {{ petData.nomePet }} </v-card-title>

@@ -4,8 +4,14 @@ import * as types from './mutation-types'
 
 export const ActionDoLogin = ({ dispatch }, payload) => {
   return services.auth.login(payload).then(res => {
-    dispatch('ActionSetUser', res.data)
+    dispatch('ActionSetUser', res.data.usuario)
     dispatch('ActionSetToken', res.data.token)
+  })
+}
+
+export const ActionDoRegister = ({ dispatch }, payload) => {
+  return services.auth.insert(payload).then(res => {
+    return res.data
   })
 }
 
